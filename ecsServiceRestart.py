@@ -1,6 +1,7 @@
 import boto3
 import json
 import fire
+import sys
 
 #python ecsServiceRestart.py restart --services="app app2" --cluster=test
 class ecsServiceRestart(object):
@@ -63,7 +64,7 @@ class ecsServiceRestart(object):
             taskDefinition = self.returnServiceTaskDefinition(service, cluster)
             if taskDefinition == False:
                 print "Service " + service + " does not exist."
-                return False
+                sys.exit(1)
 
             #Describe taskDefinition
             taskDefinitionDescription = self.client.describe_task_definition(taskDefinition=taskDefinition)
