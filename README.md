@@ -13,4 +13,6 @@ python ecsServiceRestart.py restart --services="app app2" --cluster=test
 # Testing:  
 pip install moto
 pip install pytest
-pytest test_ecsServiceRestart.py
+pytest test_ecsServiceRestart.py  
+  
+https://travis-ci.org/fdfk/ecsServiceRestart.svg?branch=master
