@@ -8,9 +8,7 @@ class ecsServiceRestart(object):
 
     def __init__(self):
 
-        awsAccessKeyId = ""
-        awsSecretAccessKey = ""
-        self.client = boto3.client('ecs',region_name="us-east-1", aws_access_key_id=awsAccessKeyId, aws_secret_access_key=awsSecretAccessKey)
+        self.client = boto3.client('ecs',region_name="us-east-1")
 
 
     def returnServiceTaskDefinition(self, service, cluster):
@@ -35,11 +33,42 @@ class ecsServiceRestart(object):
             taskRoleArn = taskDefinitionDescription['taskDefinition']['taskRoleArn']
         except:
             taskRoleArn = ""
+        try:
+            executionRoleArn = taskDefinitionDescription['taskDefinition']['executionRoleArn']
+        except:
+            executionRoleArn = ""
+        try:
+            volumes = taskDefinitionDescription['taskDefinition']['volumes']
+        except:
+            volumes = []
+        try:
+            placementConstraints = taskDefinitionDescription['taskDefinition']['placementConstraints']
+        except:
+            placementConstraints = []
+        try:
+            requiresCompatibilities = taskDefinitionDescription['taskDefinition']['requiresCompatibilities']
+        except:
+            requiresCompatibilities = []
+        try:
+            cpu = taskDefinitionDescription['taskDefinition']['cpu']
+        except:
+            cpu = ""
+        try:
+            memory = taskDefinitionDescription['taskDefinition']['memory']
+        except:
+            memory = ""
+
         response = self.client.register_task_definition(
         family=taskDefinitionDescription['taskDefinition']['family'],
         networkMode=taskDefinitionDescription['taskDefinition']['networkMode'],
         taskRoleArn=taskRoleArn,
-        containerDefinitions=taskDefinitionDescription['taskDefinition']['containerDefinitions'])
+        executionRoleArn=executionRoleArn,
+        containerDefinitions=taskDefinitionDescription['taskDefinition']['containerDefinitions'],
+        volumes=volumes,
+        placementConstraints=placementConstraints,
+        requiresCompatibilities=requiresCompatibilities,
+        cpu=cpu,
+        memory=memory)
         return response
 
     def updateService(self, service, cluster, taskDefinitionArn):
