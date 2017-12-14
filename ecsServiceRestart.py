@@ -29,6 +29,7 @@ class ecsServiceRestart(object):
         @INPUT: taskDefinitionDescription
         @OUTPUT: cloned task definition
         """
+        fargate = False
         try:
             taskRoleArn = taskDefinitionDescription['taskDefinition']['taskRoleArn']
         except:
@@ -51,25 +52,40 @@ class ecsServiceRestart(object):
             requiresCompatibilities = []
         try:
             cpu = taskDefinitionDescription['taskDefinition']['cpu']
+            fargate = True
         except:
             cpu = ""
         try:
             memory = taskDefinitionDescription['taskDefinition']['memory']
+            fargate = True
         except:
             memory = ""
 
-        response = self.client.register_task_definition(
-        family=taskDefinitionDescription['taskDefinition']['family'],
-        networkMode=taskDefinitionDescription['taskDefinition']['networkMode'],
-        taskRoleArn=taskRoleArn,
-        executionRoleArn=executionRoleArn,
-        containerDefinitions=taskDefinitionDescription['taskDefinition']['containerDefinitions'],
-        volumes=volumes,
-        placementConstraints=placementConstraints,
-        requiresCompatibilities=requiresCompatibilities,
-        cpu=cpu,
-        memory=memory)
-        return response
+        if fargate == False:
+            response = self.client.register_task_definition(
+            family=taskDefinitionDescription['taskDefinition']['family'],
+            networkMode=taskDefinitionDescription['taskDefinition']['networkMode'],
+            taskRoleArn=taskRoleArn,
+            executionRoleArn=executionRoleArn,
+            containerDefinitions=taskDefinitionDescription['taskDefinition']['containerDefinitions'],
+            volumes=volumes,
+            placementConstraints=placementConstraints,
+            requiresCompatibilities=requiresCompatibilities)
+            return response
+
+        if fargate == True:
+            response = self.client.register_task_definition(
+            family=taskDefinitionDescription['taskDefinition']['family'],
+            networkMode=taskDefinitionDescription['taskDefinition']['networkMode'],
+            taskRoleArn=taskRoleArn,
+            executionRoleArn=executionRoleArn,
+            containerDefinitions=taskDefinitionDescription['taskDefinition']['containerDefinitions'],
+            volumes=volumes,
+            placementConstraints=placementConstraints,
+            requiresCompatibilities=requiresCompatibilities,
+            cpu=cpu,
+            memory=memory)
+            return response
 
     def updateService(self, service, cluster, taskDefinitionArn):
         """
